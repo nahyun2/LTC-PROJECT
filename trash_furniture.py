@@ -134,8 +134,14 @@ class ImageBackgroundApp(QWidget):
         for i, text in enumerate(texts[index]):
             self.text_labels[i].setText(text)
             self.text_labels[i].setFont(QFont('Arial', text_fonts[0]))
-            self.text_labels[i].setGeometry(text_positions[index][i][0], text_positions[index][i][1], 750, 50)
-            self.text_labels[i].show()
+            for i, text in enumerate(texts[index]):
+                # 3번째 텍스트 라벨의 크기를 조정합니다.
+                if i == 2:
+                    self.text_labels[i].setGeometry(text_positions[index][i][0], text_positions[index][i][1], 500, 400)
+                else:
+                    self.text_labels[i].setGeometry(text_positions[index][i][0], text_positions[index][i][1], 750, 50)
+
+                self.text_labels[i].show()
 
         self.close_button.show()
 
