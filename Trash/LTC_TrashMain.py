@@ -1,4 +1,5 @@
 import sys
+import subprocess
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt
@@ -75,7 +76,8 @@ class TrashMainWindow(QWidget):
         main_button.clicked.connect(self.go_to_main)
         
     def go_to_main(self):
-        print("Go to main screen")
+        subprocess.Popen([sys.executable, "LTC_Main.py"])
+        self.close()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
