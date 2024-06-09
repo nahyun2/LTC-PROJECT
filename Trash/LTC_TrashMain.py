@@ -21,6 +21,8 @@ class TrashMainWindow(QWidget):
         self.image_label_trashmain.setPixmap(scaled_pixmap_trashmain)
         self.image_label_trashmain.setAlignment(Qt.AlignCenter)
 
+        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\search_b.png', 300, 0, 600, 200, self.dummy_function)
+
         self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\daily_b.png', 30, 250, 150, 150, self.dummy_function)
         self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\bathroom_b.png', 230, 250, 150, 150, self.dummy_function)
         self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\container_b.png', 430, 250, 150, 150, self.dummy_function)
@@ -46,7 +48,8 @@ class TrashMainWindow(QWidget):
         self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\etc_k.png', 440, 580, 127, 127, self.dummy_function)
 
         self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_map\map.png', 850, 150, 300, 550, self.dummy_function)
-
+        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\map_b.png', 850, 630, 300, 150, self.dummy_function)
+        
         self.create_main_button()
         
         self.show()
