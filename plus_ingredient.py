@@ -1,15 +1,14 @@
-import os
 import sys
+import os
 import shutil
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QMessageBox, QFileDialog, QPushButton, QTextEdit
-from PyQt5.QtGui import QPixmap, QIcon, QBrush, QPalette, QPainter, QPainterPath, QTextCharFormat, QFont
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import QTextFormat
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QMessageBox, QPushButton, QTextEdit, QFileDialog
+from PyQt5.QtGui import QPixmap, QIcon, QBrush, QPainter, QPainterPath, QTextCharFormat, QTextFormat, QFont, QPalette
+from PyQt5.QtCore import QSize, Qt, QProcess, QDir
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("나만의 냉장고")
+        self.setWindowTitle("냉장고 새로운 재료 추가하기")
         self.setGeometry(0, 0, 1200, 820)
 
         # 배경 이미지 파일 경로
@@ -156,8 +155,8 @@ class MainWindow(QMainWindow):
         memo_text4 = self.memo4_input.toPlainText().strip()
 
         # 모든 메모가 비어있는지 확인
-        if not memo_text1 or not memo_text2 or not memo_text3 or not memo_text4:
-            QMessageBox.warning(self, "저장 실패", "모든 메모를 입력해야 합니다.")
+        if not memo_text1 or not memo_text2 or not memo_text3:
+            QMessageBox.warning(self, "저장 실패", "내용을 입력해주세요")
             return
 
         # 네 개의 메모 내용을 하나의 텍스트로 합치기
@@ -169,19 +168,24 @@ class MainWindow(QMainWindow):
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(combined_text)
 
-        # 선택한 이미지 파일 복사해서 저장
+        # 선택한 이미지 파일을 원형 이미지로 변환하여 저장
         if hasattr(self, 'selected_image_path') and os.path.isfile(self.selected_image_path):
+            pixmap = QPixmap(self.selected_image_path).scaled(500, 500, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            circular_pixmap = self.create_circular_pixmap(pixmap, 500)
+
             image_file_name = f"{memo_text1}_image.png"  # 이미지는 PNG 형식으로 저장 예시
             image_save_path = os.path.join("saved_data", image_file_name)
-            shutil.copyfile(self.selected_image_path, image_save_path)
+            circular_pixmap.save(image_save_path, "PNG")  # 원형 이미지를 PNG 파일로 저장
 
-            QMessageBox.information(self, "저장 완료", f"\'{memo_text1}\' 저장되었습니다.\n텍스트 파일 경로: {file_path}\n이미지 파일 경로: {image_save_path}")
+            QMessageBox.information(self, "저장 완료", f"\'{memo_text1}\' 저장되었습니다.")
+            self.close()
         else:
-            QMessageBox.warning(self, "저장 실패", "이미지 파일을 선택해주세요.")
+            QMessageBox.warning(self, "저장 실패", "사진을 추가하거나 내용을 입력해주세요.")
 
     def close_action(self):
         # 닫기 버튼 클릭 시 수행할 동작을 여기에 구현
         self.close()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
