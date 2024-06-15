@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QMessageBox, QFileDialog, QPushButton
-from PyQt5.QtGui import QPixmap, QIcon, QBrush, QPalette
+from PyQt5.QtGui import QPixmap, QIcon, QBrush, QPalette, QPainter, QColor, QPainterPath
 from PyQt5.QtCore import QSize, Qt
 
 class MainWindow(QMainWindow):
@@ -77,10 +77,34 @@ class MainWindow(QMainWindow):
             self.update_button_image(file_path)
 
     def update_button_image(self, image_path):
-        pixmap = QPixmap(image_path).scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.circular_button.setIcon(QIcon(pixmap))
+        pixmap = QPixmap(image_path).scaled(500, 500, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        circular_pixmap = self.create_circular_pixmap(pixmap, 500)
+        self.circular_button.setIcon(QIcon(circular_pixmap))
         self.circular_button.setIconSize(QSize(500, 500))
         self.circular_button.setFixedSize(QSize(500, 500))
+
+    def create_circular_pixmap(self, pixmap, size):
+        circular_pixmap = QPixmap(size, size)
+        circular_pixmap.fill(Qt.transparent)  # 배경을 투명으로 설정
+
+        painter = QPainter(circular_pixmap)
+        painter.setRenderHint(QPainter.Antialiasing)
+        
+        # 원형 배경을 하얀색으로 채우기
+        painter.setBrush(Qt.white)
+        painter.setPen(Qt.NoPen)
+        painter.drawEllipse(0, 0, size, size)
+        
+        # 클리핑 경로를 원형으로 설정
+        path = QPainterPath()
+        path.addEllipse(0, 0, size, size)
+        painter.setClipPath(path)
+        
+        # 이미지를 중앙에 배치
+        painter.drawPixmap((size - pixmap.width()) // 2, (size - pixmap.height()) // 2, pixmap)
+        painter.end()
+
+        return circular_pixmap
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
