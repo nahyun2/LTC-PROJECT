@@ -1,4 +1,4 @@
-import sys  # sys 모듈 import
+import sys
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QPushButton, QLabel, QVBoxLayout,
     QHBoxLayout, QStackedWidget, QMainWindow, QSpacerItem, QSizePolicy
@@ -51,7 +51,7 @@ class LaundryRoom(QWidget):
 
         layout.addLayout(h_layout)
 
-        # 세탁방 사진과 지도 사진 아래에 여배 공간 추가
+        # 세탁방 사진과 지도 사진 아래에 여백 공간 추가
         layout.addSpacerItem(QSpacerItem(20, 50, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # 박스 이미지와 텍스트를 겹쳐서 표시할 위젯 생성
@@ -75,19 +75,19 @@ class LaundryRoom(QWidget):
         self.desc_label.setWordWrap(True)
         self.desc_label.setStyleSheet("""
             color: black;
-            font-size: 16px;
+            font-size: 20px;
             font-weight: bold;
-            padding: 10px;  
-            background-color: rgba(255, 255, 255, 0);  
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0);
         """)
-        self.desc_label.setFixedSize(1000, 200)  # 레이블을 박스 크기에 맞춤
+        self.desc_label.setFixedSize(980, 160)  # 레이블을 박스 크기에 맞춤
 
-        # 박스 이미지와 텍스트를 레이아웃에 추가
+        # 레이아웃에 박스 이미지와 설명 텍스트 추가
         box_layout.addWidget(self.desc_box_label)
-        box_layout.addWidget(self.desc_label, alignment=Qt.AlignCenter)
+
+        layout.addWidget(box_widget, alignment=Qt.AlignCenter)
 
         # 박스 이미지와 텍스트 아래에 여백 추가
-        layout.addWidget(box_widget, alignment=Qt.AlignCenter)
         layout.addSpacerItem(QSpacerItem(20, 50, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # 닫기 버튼
@@ -99,7 +99,6 @@ class LaundryRoom(QWidget):
         layout.addSpacerItem(QSpacerItem(20, 50, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         self.setLayout(layout)
-
 
     def go_back(self):
         self.stacked_widget.setCurrentIndex(0)
@@ -184,36 +183,34 @@ class MainWindow(QMainWindow):
 
         container_layout.addLayout(button_layout)
         container_layout.addWidget(main_widget)
-
-        # 메인 위젯을 스택에 추가
         self.stacked_widget.addWidget(container_widget)
 
-        # 세탁방 정보 화면 추가
+        # 세탁방 화면
         self.laundry_rooms = {}
         laundry_info = [
             {
                 "name": "셀피아",
-                "photo_path": "C:\\Users\\hcm\\Desktop\\washing\\sel.png",
-                "map_path": "C:\\Users\\hcm\\Desktop\\washing\\sel_m.png",
-                "desc_text": "위치 : 충북 청주시 흥덕구 신율로 154번길 14 1층 영업 시간 : 24시간 영업, 연중무휴 특징 : 세제 및 섬유유연제 무료 공급, 매장 내 화장실 이용 가능"
+                "photo_path": "C:/Users/hcm/Desktop/washing/sel.png",
+                "map_path": "C:/Users/hcm/Desktop/washing/sel_m.png",
+                "desc_text": "위치 : 충북 청주시 서원구 내수동로 51 1층\n영업 시간 : 24시간 영업, 연중무휴\n특징 : 세제 무료 공급, 매장 내 화장실 이용 가능"
             },
             {
                 "name": "세탁풍경",
                 "photo_path": "C:/Users/hcm/Desktop/washing/sp.png",
                 "map_path": "C:/Users/hcm/Desktop/washing/sp_m.png",
-                "desc_text": "위치 : 충북 청주시 흥덕구 내수동로55번길 10-2 1층 영업 시간 : 24시간 영업, 연중무휴 특징 : 회원 등록 시 포인트 적립 가능"
+                "desc_text": "위치 : 충북 청주시 흥덕구 내수동로55번길 10-2 1층\n영업 시간 : 24시간 영업, 연중무휴\n특징 : 회원 등록 시 포인트 적립 가능"
             },
             {
                 "name": "워시팡팡 충북대점",
                 "photo_path": "C:/Users/hcm/Desktop/washing/washpp_c.png",
                 "map_path": "C:/Users/hcm/Desktop/washing/washpp_c_m.png",
-                "desc_text": "위치 : 충북 청주시 흥덕구 내수동로 42번길 54 102호 영업 시간 : 24시간 영업, 연중무휴"
+                "desc_text": "위치 : 충북 청주시 흥덕구 내수동로 42번길 54 102호\n영업 시간 : 24시간 영업, 연중무휴"
             },
             {
                 "name": "워시팡팡 개신현대점",
                 "photo_path": "C:/Users/hcm/Desktop/washing/washpp_g.png",
                 "map_path": "C:/Users/hcm/Desktop/washing/washpp_g_m.png",
-                "desc_text": "위치 : 충북 청주시 서원구 성봉로 226-18 1층 영업 시간 : 24시간 영업, 연중무휴"
+                "desc_text": "위치 : 충북 청주시 서원구 성봉로 226-18 1층\n영업 시간 : 24시간 영업, 연중무휴"
             }
         ]
         for info in laundry_info:
