@@ -1,2 +1,1 @@
-# living
-자취의 구조
+# LTC Project (Living Tips for CBNU) - 자취구조대
