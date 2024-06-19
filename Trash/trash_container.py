@@ -59,6 +59,7 @@ class ImageBackgroundApp(QWidget):
                 print(f"Failed to load {os.path.join(self.container_path, img)}")
             button.setIcon(icon)
             button.setIconSize(button.size())
+            button.setStyleSheet("border: none;")  # 회색 버튼 영역을 제거합니다.
             button.clicked.connect(lambda _, x=i: self.showDetails(x))
             self.buttons.append(button)
 
@@ -99,14 +100,45 @@ class ImageBackgroundApp(QWidget):
         self.close_button.hide()
         self.close_button.clicked.connect(self.closeDetails)
 
-        # 메인 화면 버튼 및 이전 화면 버튼 추가
-        self.main_button = QPushButton('메인 화면', self)
-        self.main_button.setGeometry(50, 50, 120, 50)
-        
-        self.previous_button = QPushButton('이전 화면', self)
-        self.previous_button.setGeometry(200, 50, 120, 50)
-        
+        # 메인 화면 버튼 추가
+        self.main_button = QPushButton(self)
+        main_button_pixmap = QPixmap(os.path.join(self.base_path, 'mainbutton.png'))
+        if main_button_pixmap.isNull():
+            print(f"Failed to load {os.path.join(self.base_path, 'mainbutton.png')}")
+        self.main_button.setIcon(QIcon(main_button_pixmap))
+        self.main_button.setIconSize(main_button_pixmap.size())
+        self.main_button.setGeometry(45, 47, main_button_pixmap.width(), main_button_pixmap.height())
+        self.main_button.setStyleSheet("border: none;")
+        self.main_button.pressed.connect(self.mainButtonPressed)
+        self.main_button.released.connect(self.mainButtonReleased)
+
+        # 이전 화면 버튼 추가
+        self.previous_button = QPushButton(self)
+        previous_button_pixmap = QPixmap(os.path.join(self.base_path, 'backbutton.png'))
+        if previous_button_pixmap.isNull():
+            print(f"Failed to load {os.path.join(self.base_path, 'backbutton.png')}")
+        self.previous_button.setIcon(QIcon(previous_button_pixmap))
+        self.previous_button.setIconSize(previous_button_pixmap.size())
+        self.previous_button.setGeometry(200, 50, previous_button_pixmap.width(), previous_button_pixmap.height())
+        self.previous_button.setStyleSheet("border: none;")
+        self.previous_button.pressed.connect(self.previousButtonPressed)
+        self.previous_button.released.connect(self.previousButtonReleased)
+
         self.show()
+
+    def mainButtonPressed(self):
+        self.main_button.setIcon(QIcon(os.path.join(self.base_path, 'mainbutton_pressed.png')))
+
+    def mainButtonReleased(self):
+        self.main_button.setIcon(QIcon(os.path.join(self.base_path, 'mainbutton.png')))
+        print("메인 화면 버튼이 클릭되었습니다.")  # 여기서 원하는 동작을 추가할 수 있습니다.
+
+    def previousButtonPressed(self):
+        self.previous_button.setIcon(QIcon(os.path.join(self.base_path, 'backbutton_pressed.png')))
+
+    def previousButtonReleased(self):
+        self.previous_button.setIcon(QIcon(os.path.join(self.base_path, 'backbutton.png')))
+        print("이전 화면 버튼이 클릭되었습니다.")  # 여기서 원하는 동작을 추가할 수 있습니다.
 
     def showDetails(self, index):
         for button in self.buttons:
@@ -220,4 +252,3 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = ImageBackgroundApp()
     sys.exit(app.exec_())
-
