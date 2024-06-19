@@ -1,195 +1,200 @@
-from msilib.schema import Icon
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QFileDialog, QTextEdit, QVBoxLayout, QWidget, QMessageBox
-from PyQt5.QtGui import QPixmap, QFont, QImage, QIcon
-from PyQt5.QtCore import QSize
-from PIL import Image, ImageOps, ImageDraw
-import os
 import sys
+import os
+import shutil
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QMessageBox, QPushButton, QTextEdit, QFileDialog
+from PyQt5.QtGui import QPixmap, QIcon, QBrush, QPainter, QPainterPath, QTextCharFormat, QTextFormat, QFont, QPalette
+from PyQt5.QtCore import QSize, Qt, QProcess, QDir
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Living Tips for CBNU")
+        self.setWindowTitle("냉장고 안 재료 확인하기")
         self.setGeometry(0, 0, 1200, 820)
 
-        # 이미지 파일 경로
-        self.image_paths = {
-            "구입 날짜": "C:/Users/chlsk/Desktop/opensw project/재료관리사진/구입 날짜.png",
-            "기타 메모": "C:/Users/chlsk/Desktop/opensw project/재료관리사진/기타 메모.png",
-            "유통기한": "C:/Users/chlsk/Desktop/opensw project/재료관리사진/유통기한.png",
-            "저장": "C:/Users/chlsk/Desktop/opensw project/재료관리사진/저장버튼.png",
-            "재료 이름": "C:/Users/chlsk/Desktop/opensw project/재료관리사진/재료 이름.png",
-            "냉장고 사진": "C:/Users/chlsk/Desktop/opensw project/재료관리사진/냉장고 사진.png",  # 냉장고 사진 경로 추가
-        }
-
         # 배경 이미지 파일 경로
-        self.background_image_path = "C:/Users/chlsk/Desktop/opensw project/배경.png"
+        self.background_image_path = "background.png"
+        self.circular_image_path = "Fridge/picture.png"
+        self.image_paths = [
+            "Fridge/image.png",
+            "Fridge/save.png",
+        ]
 
         # 이미지 로드
-        self.ingredient_img = self.load_image(self.image_paths["재료 이름"], (630, 130))
-        self.date_img = self.load_image(self.image_paths["구입 날짜"], (620, 90))
-        self.expiry_img = self.load_image(self.image_paths["유통기한"], (595, 90))
-        self.memo_img = self.load_image(self.image_paths["기타 메모"], (600, 300))
-        self.save_img = self.load_image(self.image_paths["저장"], (100, 60))
-        self.pic_img = self.load_image(self.image_paths["냉장고 사진"], (500, 500))  # 냉장고 사진 크기 조정
         self.background_img = self.load_image(self.background_image_path, (1200, 820))
+        self.circular_img = self.load_image(self.circular_image_path, (500, 500))  # 크기를 키움
+        self.image_labels = []  # 이미지 라벨들을 담을 리스트
 
-        self.selected_image = None  # 초기화
         self.init_ui()
 
     def init_ui(self):
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
-        layout = QVBoxLayout(self.central_widget)
 
-        # Canvas 위젯 생성 및 배경 이미지 설정
-        self.canvas_label = QLabel()
-        layout.addWidget(self.canvas_label)
+        # 배경 이미지 설정
         self.draw_background_image()
 
-        # 냉장고 사진 버튼 생성
-        if self.pic_img:
-            self.picture_button = QPushButton()
-            self.picture_button.setIconSize(QSize(*self.pic_img.size))  # QSize로 변환
-            self.picture_button.setIcon(QIcon(QPixmap.fromImage(self.pil_image_to_qimage(self.pic_img))))
+        # 원형 이미지 버튼 생성
+        if self.circular_img:
+            self.circular_button = QPushButton(self.central_widget)
+            self.circular_button.setIcon(QIcon(self.circular_img))
+            self.circular_button.setIconSize(self.circular_img.size())
+            self.circular_button.setGeometry(30, 150, self.circular_img.width(), self.circular_img.height())
+            self.circular_button.setStyleSheet("border: none; background-color: transparent;")
+            self.circular_button.clicked.connect(self.open_image_dialog)
 
-            self.picture_button.clicked.connect(self.select_image)
-            layout.addWidget(self.picture_button)
+        # 이미지 라벨들 생성 및 위치 설정
+        label1 = QLabel(self.central_widget)
+        label1.setGeometry(570, 30, 700, 700)
+        pixmap1 = self.load_image(self.image_paths[0], (700, 700))
+        if pixmap1:
+            label1.setPixmap(pixmap1)
+        self.image_labels.append(label1)
 
-        # 오른쪽에 이미지와 입력란 추가
-        right_layout = QVBoxLayout()
+        # 저장 이미지 버튼 생성
+        self.save_label = QLabel(self.central_widget)
+        self.save_label.setGeometry(890, 735, 100, 50)
+        pixmap_save = QPixmap("Fridge/delete.png").scaled(100, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.save_label.setPixmap(pixmap_save)
+        self.save_label.setScaledContents(True)
+        self.save_label.mousePressEvent = self.save_action
 
-        if self.ingredient_img:
-            self.ingredient_entry = self.create_image_with_entry(self.ingredient_img, 20)
-            right_layout.addWidget(self.ingredient_entry)
+        # 닫기 이미지 버튼 생성
+        self.close_label = QLabel(self.central_widget)
+        self.close_label.setGeometry(1000, 730, 100, 60)
+        pixmap_close = QPixmap("close_button.png").scaled(100, 60, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.close_label.setPixmap(pixmap_close)
+        self.close_label.setScaledContents(True)
+        self.close_label.mousePressEvent = self.close_action
 
-        if self.date_img:
-            self.date_entry = self.create_image_with_entry(self.date_img, 20)
-            right_layout.addWidget(self.date_entry)
+        # 메모 입력 위젯 생성
+        self.memo1_input = QTextEdit(self.central_widget)
+        self.memo1_input.setGeometry(800, 100, 250, 50)
+        self.set_cursor_style(self.memo1_input)  # 처음 한 번만 설정
 
-        if self.expiry_img:
-            self.expiry_entry = self.create_image_with_entry(self.expiry_img, 20)
-            right_layout.addWidget(self.expiry_entry)
+        self.memo2_input = QTextEdit(self.central_widget)
+        self.memo2_input.setGeometry(800, 200, 250, 50)
+        self.set_cursor_style(self.memo2_input)  # 처음 한 번만 설정
 
-        if self.memo_img:
-            self.memo_entry = self.create_image_with_text(self.memo_img, 30, 15)
-            right_layout.addWidget(self.memo_entry)
+        self.memo3_input = QTextEdit(self.central_widget)
+        self.memo3_input.setGeometry(800, 310, 250, 50)
+        self.set_cursor_style(self.memo3_input)  # 처음 한 번만 설정
 
-        # 저장 버튼 추가
-        if self.save_img:
-            self.save_button = QPushButton()
-            self.save_button.setIconSize(QSize(*self.save_img.size))  # QSize로 변환
-            self.save_button.setIcon(QIcon(QPixmap.fromImage(self.pil_image_to_qimage(self.save_img))))
-            self.save_button.clicked.connect(self.save_data)
-            right_layout.addWidget(self.save_button)
+        self.memo4_input = QTextEdit(self.central_widget)
+        self.memo4_input.setGeometry(630, 470, 420, 200)
+        self.set_cursor_style(self.memo4_input)  # 처음 한 번만 설정
 
-        layout.addLayout(right_layout)
+    def set_cursor_style(self, text_edit):
+        # 이미 설정된 폰트 크기가 있는지 확인 후 적용
+        cursor = text_edit.textCursor()
+        if not cursor.hasSelection():  # 선택된 텍스트가 없을 때만 설정
+            format = QTextCharFormat()
+            current_format = cursor.charFormat()
+            font = QFont()
+            if current_format.hasProperty(QTextFormat.FontPointSize):
+                font_size = current_format.fontPointSize()
+            else:
+                font_size = 16  # 기본 폰트 크기 설정
+            font.setPointSize(font_size)
+            format.setFont(font)
+            cursor.setCharFormat(format)
+            text_edit.setTextCursor(cursor)
 
     def draw_background_image(self):
         if self.background_img:
-            q_image = self.pil_image_to_qimage(self.background_img)
-            self.canvas_label.setPixmap(QPixmap.fromImage(q_image))
+            palette = self.palette()
+            brush = QBrush(self.background_img)
+            palette.setBrush(QPalette.Background, brush)
+            self.setPalette(palette)
 
     def load_image(self, image_path, size):
         try:
-            image = Image.open(image_path)
-            image = image.resize(size, Image.LANCZOS)
-            return image
+            pixmap = QPixmap(image_path).scaled(size[0], size[1], Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            return pixmap
         except Exception as e:
             QMessageBox.critical(None, "이미지 로드 오류", f"이미지를 로드하는 동안 오류가 발생했습니다: {e}")
             return None
 
-    def select_image(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Select Image", "", "Image Files (*.png *.jpg *.jpeg)")
+    def open_image_dialog(self):
+        options = QFileDialog.Options()
+        file_path, _ = QFileDialog.getOpenFileName(self, "이미지 선택", "", "이미지 파일 (*.png *.jpg *.jpeg *.bmp *.gif)", options=options)
         if file_path:
-            img = self.load_image(file_path, (500, 500))
-            if img:
-                circular_img = ImageOps.fit(img, (500, 500), Image.LANCZOS)
-                mask = Image.new('L', (500, 500), 0)
-                draw = ImageDraw.Draw(mask)
-                draw.ellipse((0, 0, 500, 500), fill=255)
-                circular_img.putalpha(mask)
-                self.selected_image = img
-                q_image = self.pil_image_to_qimage(circular_img)
-                self.picture_button.setIcon(QPixmap.fromImage(q_image))
+            self.update_button_image(file_path)
 
-    def create_image_with_entry(self, image, entry_font_size):
-        widget = QWidget()
-        layout = QVBoxLayout(widget)
-        q_image = self.pil_image_to_qimage(image)
-        label = QLabel()
-        label.setPixmap(QPixmap.fromImage(q_image))
-        layout.addWidget(label)
+    def update_button_image(self, image_path):
+        pixmap = QPixmap(image_path).scaled(500, 500, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        circular_pixmap = self.create_circular_pixmap(pixmap, 500)
+        self.circular_button.setIcon(QIcon(circular_pixmap))
+        self.circular_button.setIconSize(QSize(500, 500))
+        self.circular_button.setFixedSize(QSize(500, 500))
 
-        entry = QTextEdit()
-        entry.setFont(QFont("Arial", entry_font_size))
-        layout.addWidget(entry)
-        widget.entry = entry  # QMainWindow 내에서 entry 접근을 위함
-        return widget
+        # 선택한 이미지를 저장할 경로 설정
+        self.selected_image_path = image_path
 
-    def create_image_with_text(self, image, text_width, text_height):
-        widget = QWidget()
-        layout = QVBoxLayout(widget)
-        q_image = self.pil_image_to_qimage(image)
-        label = QLabel()
-        label.setPixmap(QPixmap.fromImage(q_image))
-        layout.addWidget(label)
+    def create_circular_pixmap(self, pixmap, size):
+        circular_pixmap = QPixmap(size, size)
+        circular_pixmap.fill(Qt.transparent)  # 배경을 투명으로 설정
 
-        text = QTextEdit()
-        text.setFixedSize(text_width * 10, text_height * 20)
-        layout.addWidget(text)
-        widget.text = text  # QMainWindow 내에서 text 접근을 위함
-        return widget
+        painter = QPainter(circular_pixmap)
+        painter.setRenderHint(QPainter.Antialiasing)
 
-    def pil_image_to_qimage(self, pil_image):
-        if pil_image.mode == "RGB":
-            r, g, b = pil_image.split()
-            return QImage(Image.merge("RGB", (b, g, r)).tobytes(), pil_image.width, pil_image.height, QImage.Format_RGB888)
-        elif pil_image.mode == "RGBA":
-            r, g, b, a = pil_image.split()
-            return QImage(Image.merge("RGBA", (b, g, r, a)).tobytes(), pil_image.width, pil_image.height, QImage.Format_RGBA8888)
+        # 원형 배경을 하얀색으로 채우기
+        painter.setBrush(Qt.white)
+        painter.setPen(Qt.NoPen)
+        painter.drawEllipse(0, 0, size, size)
+
+        # 클리핑 경로를 원형으로 설정
+        path = QPainterPath()
+        path.addEllipse(0, 0, size, size)
+        painter.setClipPath(path)
+
+        # 이미지를 중앙에 배치
+        painter.drawPixmap((size - pixmap.width()) // 2, (size - pixmap.height()) // 2, pixmap)
+        painter.end()
+
+        return circular_pixmap
+
+    def save_action(self):
+        # 저장 버튼 클릭 시 메모와 이미지 저장
+        memo_text1 = self.memo1_input.toPlainText().strip()
+        memo_text2 = self.memo2_input.toPlainText().strip()
+        memo_text3 = self.memo3_input.toPlainText().strip()
+        memo_text4 = self.memo4_input.toPlainText().strip()
+
+        # 모든 메모가 비어있는지 확인
+        if not memo_text1 or not memo_text2 or not memo_text3:
+            QMessageBox.warning(self, "저장 실패", "내용을 입력해주세요")
+            return
+
+        # 네 개의 메모 내용을 하나의 텍스트로 합치기
+        combined_text = f"메모 1:\n{memo_text1}\n\n메모 2:\n{memo_text2}\n\n메모 3:\n{memo_text3}\n\n메모 4:\n{memo_text4}"
+
+        # 텍스트 파일로 저장
+        file_name = f"{memo_text1}.txt"
+        file_path = os.path.join("saved_data", file_name)
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(combined_text)
+
+        # 선택한 이미지 파일을 원형 이미지로 변환하여 저장
+        if hasattr(self, 'selected_image_path') and os.path.isfile(self.selected_image_path):
+            pixmap = QPixmap(self.selected_image_path).scaled(500, 500, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            circular_pixmap = self.create_circular_pixmap(pixmap, 500)
+
+            image_file_name = f"{memo_text1}.png"  # 이미지는 PNG 형식으로 저장 예시
+            image_save_path = os.path.join("saved_data", image_file_name)
+            circular_pixmap.save(image_save_path, "PNG")  # 원형 이미지를 PNG 파일로 저장
+
+            QMessageBox.information(self, "저장 완료", f"\'{memo_text1}\' 저장되었습니다.")
+            self.close()
         else:
-            return QImage(pil_image.tobytes(), pil_image.width, pil_image.height, QImage.Format_Indexed8)
+            QMessageBox.warning(self, "저장 실패", "사진을 추가하거나 내용을 입력해주세요.")
 
-    def save_data(self):
-        try:
-            ingredient = self.ingredient_entry.entry.toPlainText().strip()
-            date = self.date_entry.entry.toPlainText().strip()
-            expiry = self.expiry_entry.entry.toPlainText().strip()
-            memo = self.memo_entry.text.toPlainText().strip()
+    def close_action(self):
+        # 닫기 버튼 클릭 시 수행할 동작을 여기에 구현
+        self.close()
 
-            if not (ingredient and date and expiry):
-                QMessageBox.critical(self, "입력 오류", "재료 이름, 구입 날짜, 유통기한은 필수 입력 항목입니다.")
-                return
-
-            if self.selected_image is None:
-                QMessageBox.critical(self, "이미지 선택 오류", "이미지를 선택해주세요.")
-                return
-
-            save_directory = "C:/Users/chlsk/Desktop/opensw project/saved_data"
-            os.makedirs(save_directory, exist_ok=True)
-
-            base_filename = os.path.join(save_directory, ingredient.replace(" ", "_"))
-
-            # 이미지 저장
-            image_save_path = base_filename + ".png"
-            self.selected_image.save(image_save_path)
-
-            # 텍스트 데이터 저장
-            text_save_path = base_filename + ".txt"
-            with open(text_save_path, "w") as file:
-                file.write(f"재료 이름: {ingredient}\n")
-                file.write(f"구입 날짜: {date}\n")
-                file.write(f"유통기한: {expiry}\n")
-                file.write(f"메모: {memo}\n")
-
-            QMessageBox.information(self, "저장 완료", "데이터가 성공적으로 저장되었습니다.")
-        except Exception as e:
-                        QMessageBox.critical(self, "오류 발생", f"오류가 발생했습니다: {e}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())
-
