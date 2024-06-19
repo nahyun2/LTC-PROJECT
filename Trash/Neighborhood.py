@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QPalette, QBrush
+from PyQt5.QtGui import QPixmap, QPalette, QBrush, QIcon
 
 class GarbageCollectionSchedule(QWidget):
     def __init__(self):
@@ -11,16 +11,28 @@ class GarbageCollectionSchedule(QWidget):
     def initUI(self):
         # 메인 레이아웃 생성
         main_layout = QVBoxLayout()
+        
+        self.setWindowTitle('수거 요일 안내')
+        self.setFixedSize(1200, 820)
 
-        # 뒤로가기 버튼 생성 및 설정
-        back_button = QPushButton("뒤로가기", self)
-        back_button.setStyleSheet("font-family: Arial; font-size: 14px;")
-        back_button.clicked.connect(self.goBack)  # 버튼 클릭 시 동작 연결
+        # 배경 이미지 설정
+        self.setAutoFillBackground(True)
+        palette = self.palette()
+        background_image = QPixmap("C:\\Users\\hcm\\Desktop\\LTC\\back2.png")
+        # 배경 이미지를 창의 크기에 맞게 조정
+        scaled_background = background_image.scaled(self.size(), Qt.IgnoreAspectRatio)
+        palette.setBrush(QPalette.Window, QBrush(scaled_background))
+        self.setPalette(palette)
 
-        # 뒤로가기 버튼을 왼쪽 상단에 추가하기 위한 레이아웃
-        top_layout = QHBoxLayout()
-        top_layout.addWidget(back_button)
-        top_layout.addStretch(1)  # 오른쪽으로 밀기 위해서 사용
+        # 뒤로가기 버튼 이미지 설정
+        back_button = QLabel(self)
+        back_image = QPixmap("C:\\Users\\hcm\\Desktop\\LTC\\back_button.png")
+        back_button.setPixmap(back_image.scaled(100, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        back_button.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        back_button.mousePressEvent = self.goBack  # 마우스 클릭 이벤트를 이용해 뒤로가기 기능 호출
+
+        # 뒤로가기 버튼을 왼쪽 상단에 추가
+        main_layout.addWidget(back_button)
 
         # 청주시 생활쓰레기 수거 요일 제목 레이블 생성 및 설정
         city_label_title = QLabel("청주시 생활쓰레기 수거 요일", self)
@@ -42,7 +54,6 @@ class GarbageCollectionSchedule(QWidget):
         """)
 
         # 메인 레이아웃에 제목과 정보를 추가
-        main_layout.addLayout(top_layout)  # 최상단 레이아웃 추가
         main_layout.addWidget(city_label_title)
         main_layout.addWidget(city_label_info)
 
@@ -64,12 +75,12 @@ class GarbageCollectionSchedule(QWidget):
 
         # 동네와 해당 이미지 경로 정의
         neighborhoods = [
-            ("개신동 : 월 수 금", "C:\\Users\\hcm\\Desktop\\openimg\\dong\\gaesindong.jpg"),
-            ("복대동 : 화 목 일", "C:\\Users\\hcm\\Desktop\\openimg\\dong\\bokdaedong.jpg"),
-            ("모충동 : 화 목 일", "C:\\Users\\hcm\\Desktop\\openimg\\dong\\mochungdong.jpg"),
-            ("사직동 : 화 목 일", "C:\\Users\\hcm\\Desktop\\openimg\\dong\\sigikdong.jpg"),
-            ("봉명동 : 월 수 금", "C:\\Users\\hcm\\Desktop\\openimg\\dong\\bongmyeongdong.jpg"),
-            ("사창동 : 화 목 일", "C:\\Users\\hcm\\Desktop\\openimg\\dong\\sachangdong.jpg"),
+            ("개신동 : 월 수 금", "C:\\Users\\hcm\\Desktop\\LTC\\openimg\\dong\\gaesindong.jpg"),
+            ("복대동 : 화 목 일", "C:\\Users\\hcm\\Desktop\\LTC\\openimg\\dong\\bokdaedong.jpg"),
+            ("모충동 : 화 목 일", "C:\\Users\\hcm\\Desktop\\LTC\\openimg\\dong\\mochungdong.jpg"),
+            ("사직동 : 화 목 일", "C:\\Users\\hcm\\Desktop\\LTC\\openimg\\dong\\sigikdong.jpg"),
+            ("봉명동 : 월 수 금", "C:\\Users\\hcm\\Desktop\\LTC\\openimg\\dong\\bongmyeongdong.jpg"),
+            ("사창동 : 화 목 일", "C:\\Users\\hcm\\Desktop\\LTC\\openimg\\dong\\sachangdong.jpg"),
         ]
 
         # 각 동네의 행 레이아웃 생성
@@ -112,30 +123,19 @@ class GarbageCollectionSchedule(QWidget):
         # 동네 레이아웃을 메인 레이아웃에 추가
         main_layout.addLayout(neighborhoods_layout)
 
-        # 메인 창에 레이아웃 설정
+        # 창에 메인 레이아웃 설정
         self.setLayout(main_layout)
 
-        # 배경 이미지 설정
-        self.setAutoFillBackground(True)
-        palette = self.palette()
-        background_image = QPixmap("C:\\Users\\hcm\\Desktop\\openimg\\background.jpg")
-        palette.setBrush(QPalette.Window, QBrush(background_image))
-        self.setPalette(palette)
+        # 창 보이기
+        self.show()
 
-        # 창 속성 설정
-        self.setWindowTitle('수거 요일 안내')
-        self.setFixedSize(1200, 820)
-
-    def goBack(self):
+    def goBack(self, event):
         print("뒤로가기 버튼 클릭됨")
-        # 여기서 뒤로가기 버튼을 눌렀을 때의 동작을 정의하십시오
-        # 예를 들어, 이전 화면으로 돌아가거나 프로그램을 종료하도록 할 수 있습니다
-        self.close()  # 이 예제에서는 창을 닫도록 설정
+        self.close()
 
 def main():
     app = QApplication(sys.argv)
     ex = GarbageCollectionSchedule()
-    ex.show()
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
