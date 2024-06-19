@@ -1,6 +1,6 @@
 import os
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QPushButton, QTextEdit
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
 
 class CheckIngredientWindow(QMainWindow):
     def __init__(self, image_path):
@@ -15,9 +15,16 @@ class CheckIngredientWindow(QMainWindow):
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
 
+        # 배경 이미지 설정
+        self.background_label = QLabel(self.central_widget)
+        self.background_label.setGeometry(0, 0, 1200, 820)
+        pixmap_background = self.load_image("background.png", (1200, 820))
+        if pixmap_background:
+            self.background_label.setPixmap(pixmap_background)
+
         # 이미지 라벨 생성 및 위치 설정
         self.image_label = QLabel(self.central_widget)
-        self.image_label.setGeometry(30, 30, 500, 500)
+        self.image_label.setGeometry(30, 150, 500, 500)
         pixmap = self.load_image(self.image_path, (500, 500))
         if pixmap:
             self.image_label.setPixmap(pixmap)
@@ -27,9 +34,22 @@ class CheckIngredientWindow(QMainWindow):
         self.memo1_input.setGeometry(570, 30, 600, 700)
         self.memo1_input.setReadOnly(True)  # 읽기 전용으로 설정
 
-        # 닫기 버튼 생성
-        self.close_button = QPushButton("닫기", self.central_widget)
-        self.close_button.setGeometry(1000, 730, 100, 60)
+        # 삭제 버튼 이미지 설정
+        self.delete_button = QPushButton(self.central_widget)
+        self.delete_button.setGeometry(860, 735, 110, 60)
+        pixmap_delete = QPixmap("Fridge/delete.png").scaled(110, 60)
+        self.delete_button.setIcon(QIcon(pixmap_delete))
+        self.delete_button.setIconSize(pixmap_delete.size())
+        self.delete_button.setStyleSheet("border: none;")
+        self.delete_button.clicked.connect(self.delete_action)
+
+        # 닫기 버튼 이미지 설정
+        self.close_button = QPushButton(self.central_widget)
+        self.close_button.setGeometry(980, 730, 110, 70)  # 수정된 부분: 닫기 버튼 위치 조정
+        pixmap_close = QPixmap("close_button.png").scaled(110, 70)
+        self.close_button.setIcon(QIcon(pixmap_close))
+        self.close_button.setIconSize(pixmap_close.size())
+        self.close_button.setStyleSheet("border: none;")
         self.close_button.clicked.connect(self.close_action)
 
         # 텍스트 파일에서 메모 내용 읽어오기
@@ -47,6 +67,10 @@ class CheckIngredientWindow(QMainWindow):
         except Exception as e:
             print(f"이미지를 로드하는 동안 오류 발생: {e}")
             return None
+
+    def delete_action(self):
+        # 삭제 기능 구현
+        print("삭제 버튼 클릭")
 
     def close_action(self):
         self.close()
