@@ -3,8 +3,8 @@ from PyQt5.QtWidgets import (
     QApplication, QWidget, QPushButton, QLabel, QVBoxLayout,
     QHBoxLayout, QStackedWidget, QMainWindow, QSpacerItem, QSizePolicy
 )
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtCore import Qt, QSize
 
 class LaundryRoom(QWidget):
     def __init__(self, room_name, photo_path, map_path, stacked_widget, desc_text):
@@ -91,9 +91,15 @@ class LaundryRoom(QWidget):
         layout.addSpacerItem(QSpacerItem(20, 50, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # 닫기 버튼
-        self.close_button = QPushButton("닫기", self)
+        self.close_button = QPushButton(self)
+        close_icon = QIcon("C:/Users/hcm/Desktop/washing/close_button.png")
+        self.close_button.setIcon(close_icon)
+        self.close_button.setIconSize(QSize(200, 80))
+        self.close_button.setFixedSize(200, 80)
+        self.close_button.setStyleSheet("border:none;")
         self.close_button.clicked.connect(self.go_back)
         layout.addWidget(self.close_button, alignment=Qt.AlignCenter)
+
 
         # 여백 추가하여 닫기 버튼을 더 아래로 위치
         layout.addSpacerItem(QSpacerItem(20, 50, QSizePolicy.Minimum, QSizePolicy.Expanding))
@@ -140,15 +146,25 @@ class MainWindow(QMainWindow):
         # 빨래방 버튼 생성 및 레이아웃에 추가
         self.laundry_buttons = {}
         laundry_names = ["셀피아", "세탁풍경", "워시팡팡 충북대점", "워시팡팡 개신현대점"]
+        laundry_images = [
+            r"C:\\Users\\hcm\\Desktop\\washing\\sel_button.png",
+            r"C:\\Users\\hcm\Desktop\\washing\\sp_button.png",
+            r"C:\\Users\\hcm\Desktop\\washing\\washpp_c_button.png",
+            r"C:\\Users\\hcm\\Desktop\\washing\\washpp_g_button.png"
+        ]
         for i in range(4):
-            button = QPushButton(f" {laundry_names[i]}", self)
+            button = QPushButton(self)
+            button.setIcon(QIcon(laundry_images[i]))
+            button.setIconSize(QSize(200, 150))
+            button.setFixedSize(200, 150)
+            button.setStyleSheet("border:none;")
             button.clicked.connect(self.show_laundry_room)
             self.laundry_buttons[button] = laundry_names[i]
             if i < 2:
                 left_button_layout.addWidget(button)
             else:
                 right_button_layout.addWidget(button)
-
+        
         # 학교 지도 사진 영역
         self.map_label = QLabel(self)
         pixmap = QPixmap("C:/Users/hcm/Desktop/LTC/Washing/schoolmap.png")
@@ -168,8 +184,12 @@ class MainWindow(QMainWindow):
         main_widget.setLayout(main_layout)
 
         # 뒤로가기 버튼
-        self.back_button = QPushButton("뒤로가기", self)
-        self.back_button.setFixedSize(100, 30)
+        self.back_button = QPushButton(self)
+        back_icon = QIcon("C:/Users/hcm/Desktop/washing/back_button.png")
+        self.back_button.setIcon(back_icon)
+        self.back_button.setIconSize(QSize(150, 50))  # 아이콘 크기 조정
+        self.back_button.setFixedSize(150, 50)  # 버튼 크기 조정
+        self.back_button.setStyleSheet("border: none;")  # 버튼 테두리 제거
         self.back_button.clicked.connect(self.go_back)
 
         # 메인 화면 및 버튼을 포함하는 위젯과 레이아웃
