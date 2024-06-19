@@ -97,7 +97,7 @@ class MainWindow(QMainWindow):
         button.setIconSize(pixmap.size())
         button.setFixedSize(pixmap.size())
         button.setStyleSheet("border: none; background-color: transparent;")
-        button.clicked.connect(self.run_check_ingredient)
+        button.clicked.connect(lambda: self.run_check_ingredient(image_path))
 
         self.image_buttons.append(button)
         self.image_paths.add(image_path)  # 추가된 이미지 경로를 기록
@@ -158,13 +158,9 @@ class MainWindow(QMainWindow):
 
         self.refresh_image_layout()
 
-    def run_check_ingredient(self):
-        sender = self.sender()  # 이벤트를 발생시킨 버튼 객체
-        button_index = self.image_buttons.index(sender)
-        image_path = list(self.image_paths)[button_index]  # 클릭한 버튼의 이미지 경로
-
-        process = QProcess(self)
-        process.start("python", ["check_ingredient.py", image_path])  # 이미지 경로를 인자로 넘김
+    def run_check_ingredient(self, image_path):
+        self.check_ingredient_window = CheckIngredientWindow(image_path)
+        self.check_ingredient_window.show()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

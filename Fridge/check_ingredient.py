@@ -1,6 +1,7 @@
 import os
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QPushButton, QTextEdit
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
 
 class CheckIngredientWindow(QMainWindow):
     def __init__(self, image_path):
@@ -42,7 +43,7 @@ class CheckIngredientWindow(QMainWindow):
 
     def load_image(self, image_path, size):
         try:
-            pixmap = QPixmap(image_path).scaled(size[0], size[1])
+            pixmap = QPixmap(image_path).scaled(size[0], size[1], Qt.KeepAspectRatio, Qt.SmoothTransformation)
             return pixmap
         except Exception as e:
             print(f"이미지를 로드하는 동안 오류 발생: {e}")
