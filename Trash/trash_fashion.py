@@ -95,10 +95,18 @@ class ImageBackgroundApp(QWidget):
 
         self.text_labels = []
 
-        self.close_button = QPushButton('닫기', self)
-        self.close_button.setGeometry(1050, 700, 100, 50)
+        # 닫기 버튼을 PNG 파일로 변경하고 효과 추가
+        self.close_button = QPushButton(self)
+        close_button_pixmap = QPixmap(os.path.join(self.base_path, 'closebutton.png'))
+        if close_button_pixmap.isNull():
+            print(f"Failed to load {os.path.join(self.base_path, 'closebutton.png')}")
+        self.close_button.setIcon(QIcon(close_button_pixmap))
+        self.close_button.setIconSize(close_button_pixmap.size())
+        self.close_button.setGeometry(1050, 700, close_button_pixmap.width(), close_button_pixmap.height())
+        self.close_button.setStyleSheet("border: none;")
+        self.close_button.pressed.connect(self.closeButtonPressed)
+        self.close_button.released.connect(self.closeButtonReleased)
         self.close_button.hide()
-        self.close_button.clicked.connect(self.closeDetails)
 
         # 메인 화면 버튼 추가
         self.main_button = QPushButton(self)
@@ -139,6 +147,13 @@ class ImageBackgroundApp(QWidget):
     def previousButtonReleased(self):
         self.previous_button.setIcon(QIcon(os.path.join(self.base_path, 'backbutton.png')))
         print("이전 화면 버튼이 클릭되었습니다.")  # 여기서 원하는 동작을 추가할 수 있습니다.
+
+    def closeButtonPressed(self):
+        self.close_button.setIcon(QIcon(os.path.join(self.base_path, 'closebutton_pressed.png')))
+
+    def closeButtonReleased(self):
+        self.close_button.setIcon(QIcon(os.path.join(self.base_path, 'closebutton.png')))
+        self.closeDetails()
 
     def showDetails(self, index):
         for button in self.buttons:
