@@ -1,7 +1,7 @@
 import sys
 import os
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMainWindow, QVBoxLayout, QHBoxLayout, QScrollArea, QLabel, QMessageBox
-from PyQt5.QtGui import QPixmap, QIcon, QImage, QPalette, QBrush
+from PyQt5.QtGui import QPixmap, QIcon, QImage, QPainter, QPalette, QBrush
 from PyQt5.QtCore import QTimer, Qt, QProcess
 
 from check_ingredient import CheckIngredientWindow  # check_ingredient.py에서 CheckIngredientWindow를 import
@@ -59,6 +59,10 @@ class MainWindow(QMainWindow):
 
         self.set_image_layout_background("Fridge/list.png")  # 이미지 레이아웃의 배경 설정
 
+        # 이미지 버튼 클릭 시 check_ingredient.py 실행
+        for button in self.image_buttons:
+            button.clicked.connect(self.run_check_ingredient)
+
     def set_image_layout_background(self, image_path):
         try:
             image = QImage(image_path)
@@ -97,8 +101,7 @@ class MainWindow(QMainWindow):
         button.setIconSize(pixmap.size())
         button.setFixedSize(pixmap.size())
         button.setStyleSheet("border: none; background-color: transparent;")
-
-        button.clicked.connect(self.run_check_ingredient)  # 이미지 버튼 클릭 시 이벤트 연결
+        button.clicked.connect(lambda: self.run_check_ingredient(image_path))  # 클릭 시 이미지 경로를 전달
 
         self.image_buttons.append(button)
         self.image_paths.add(image_path)  # 추가된 이미지 경로를 기록
@@ -157,11 +160,7 @@ class MainWindow(QMainWindow):
 
         self.refresh_image_layout()
 
-    def run_check_ingredient(self):
-        sender = self.sender()  # 이벤트를 발생시킨 버튼 객체
-        button_index = self.image_buttons.index(sender)
-        image_path = list(self.image_paths)[button_index]
-
+    def run_check_ingredient(self, image_path):
         self.check_ingredient_window = CheckIngredientWindow(image_path)
         self.check_ingredient_window.show()
 

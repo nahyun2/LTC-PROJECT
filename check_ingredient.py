@@ -1,7 +1,6 @@
 import os
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QPushButton, QTextEdit
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt
 
 class CheckIngredientWindow(QMainWindow):
     def __init__(self, image_path):
@@ -28,7 +27,7 @@ class CheckIngredientWindow(QMainWindow):
         self.memo1_input.setGeometry(570, 30, 600, 700)
         self.memo1_input.setReadOnly(True)  # 읽기 전용으로 설정
 
-        # 저장 버튼 생성
+        # 닫기 버튼 생성
         self.close_button = QPushButton("닫기", self.central_widget)
         self.close_button.setGeometry(1000, 730, 100, 60)
         self.close_button.clicked.connect(self.close_action)
@@ -43,7 +42,7 @@ class CheckIngredientWindow(QMainWindow):
 
     def load_image(self, image_path, size):
         try:
-            pixmap = QPixmap(image_path).scaled(size[0], size[1], Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            pixmap = QPixmap(image_path).scaled(size[0], size[1])
             return pixmap
         except Exception as e:
             print(f"이미지를 로드하는 동안 오류 발생: {e}")
