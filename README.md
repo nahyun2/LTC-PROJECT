@@ -1,5 +1,5 @@
 ![header](https://capsule-render.vercel.app/api?type=Waving&text=LTC&color=B4E5FF)
-# :eyes: Languages <br/> <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white"/>
+# :eyes: Languages <br/> <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white"/> <img src="https://img.shields.io/badge/Qt-41CD52?style=flat-square&logo=Qt&logoColor=white"/>
 # :eyes: Team <br/>
 ## :open_file_folder: Main
 + 연서 <br/><br/> 
