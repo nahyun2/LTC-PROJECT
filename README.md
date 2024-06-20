@@ -6,6 +6,7 @@
 ## :recycle: Trash
 + 나현 <br/>
 + 재영 <br/>
++ 연서 <br/>
 + 채민 <br/><br/> 
 ## :rice: Fridge
 + 나현 <br/><br/> 
