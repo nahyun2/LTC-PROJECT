@@ -1,86 +1,75 @@
 import sys
+import os
 import subprocess
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout
+from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt
 
-class TrashMainWindow(QWidget):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         
-        self.initUI()
+        main_folder = os.path.join(os.path.expanduser("~"), "Desktop", "living-main")
         
-    def initUI(self):
-        self.setWindowTitle("Living Tips for CBNU / Trash Tips")
-        self.setWindowIcon(QIcon('Logo.png'))
+        logo_path = os.path.join(main_folder, "img", "Logo.png")
+        
+        self.setWindowTitle("Living Tips for CBNU")
+        self.setWindowIcon(QIcon(logo_path))
         self.setGeometry(400, 100, 1180, 820)
     
-        self.image_label_trashmain = QLabel(self)
-        self.image_label_trashmain.setGeometry(0, 0, 1180, 820)    
-        pixmap_trashmain = QPixmap(r'C:\Users\user\Desktop\LTC_project\IMG_background\background.jpg')
-        scaled_pixmap_trashmain = pixmap_trashmain.scaled(self.image_label_trashmain.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
-        self.image_label_trashmain.setPixmap(scaled_pixmap_trashmain)
-        self.image_label_trashmain.setAlignment(Qt.AlignCenter)
-
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\search_b.png', 300, 0, 600, 200, self.dummy_function)
-
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\daily_b.png', 30, 250, 150, 150, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\bathroom_b.png', 230, 250, 150, 150, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\container_b.png', 430, 250, 150, 150, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\cosmetic_b.png', 630, 250, 150, 150, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\fashion_b.png', 30, 460, 150, 150, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\food_b.png', 230, 457, 150, 150, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\furniture_b.png', 430, 460, 150, 150, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\home_b.png', 630, 460, 150, 150, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\kitchen_b.png', 30, 660, 150, 150, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\stationery_b.png', 230, 660, 150, 150, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\etc_b.png', 430, 663, 150, 150, self.dummy_function)
+        self.image_label_main = QLabel(self)
+        self.image_label_main.setGeometry(0, 0, 1180, 820)    
         
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\daily_k.png', 40, 165, 130, 130, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\bathroom_k.png', 240, 165, 130, 130, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\container_k.png', 440, 165, 130, 130, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\cosmetic_k.png', 640, 165, 130, 130, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\fashion_k.png', 40, 375, 130, 130, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\food_k.png', 240, 374, 130, 130, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\furniture_k.png', 440, 375, 130, 130, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\home_k.png', 640, 375, 130, 130, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\kitchen_k.png', 40, 580, 130, 130, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\stationery_k.png', 240, 580, 130, 130, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\etc_k.png', 440, 580, 127, 127, self.dummy_function)
+        main_background_path = os.path.join(main_folder, "img", "Main", "mainback.jpg")
+        pixmap_main = QPixmap(main_background_path)  
+        scaled_pixmap_main = pixmap_main.scaled(self.image_label_main.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        self.image_label_main.setPixmap(scaled_pixmap_main)
+        self.image_label_main.setAlignment(Qt.AlignCenter)
+        
+        self.image_label_Logo = QLabel(self)
+        self.image_label_Logo.setGeometry(360, 255, 450, 450)    
+        
+        pixmap_Logo = QPixmap(logo_path)  
+        scaled_pixmap_Logo = pixmap_Logo.scaled(self.image_label_Logo.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        self.image_label_Logo.setPixmap(scaled_pixmap_Logo)
+        self.image_label_Logo.setAlignment(Qt.AlignCenter)
+        
+        self.create_image_button(os.path.join(main_folder, "img", "Main", "laundry.png"), 250, 300, "laundry_tip", 200, 150, self.dummy_function)
+        self.create_image_button(os.path.join(main_folder, "img", "Main", "trash.png"), 500, 280, "trash_tip", 200, 150, self.open_trashmain)
+        self.create_image_button(os.path.join(main_folder, "img", "Main", "fridge.png"), 750, 290, "cooking_tip", 200, 150, self.open_fridgemain)
+        self.create_image_button(os.path.join(main_folder, "img", "Main", "login.png"), 980, 720, "login", 150, 120, self.dummy_function)
 
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_map\map.png', 850, 150, 300, 550, self.dummy_function)
-        self.create_image_button(r'C:\Users\user\Desktop\LTC_project\IMG_button\map_b.png', 850, 630, 300, 150, self.dummy_function)
-        
-        self.create_main_button()
-        
-        self.show()
-        
-    def create_image_button(self, image_path, x, y, width, height, function):
-        container = QWidget(self)
-        container.setGeometry(x, y, width, height + 60)  # 60 is the extra height for the label and button spacing
+        self.create_image_button(os.path.join(main_folder, "img", "Main", "cat.png"), 50, 500, "exp", 300, 300, self.dummy_function)
+        self.create_image_button(os.path.join(main_folder, "img", "Main", "dog.png"), 705, 15, "exp", 300, 300, self.dummy_function)
+        self.create_image_button(os.path.join(main_folder, "img", "Main", "hippo.png"), 750, 500, "exp", 250, 250, self.dummy_function)
+        self.create_image_button(os.path.join(main_folder, "img", "Main", "frog.png"), 0, 15, "exp", 270, 270, self.dummy_function)
 
-        btn = QPushButton(container)
+    def create_image_button(self, image_path, x, y, tooltip, width, height, function):
+        btn = QPushButton(parent=self)
         pixmap = QPixmap(image_path)
         scaled_pixmap = pixmap.scaled(width, height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         btn.setIcon(QIcon(scaled_pixmap))
         btn.setIconSize(scaled_pixmap.size())
-        btn.setGeometry(0, 0, width, height)
+        btn.setToolTip(tooltip)
+        btn.setGeometry(x, y, scaled_pixmap.width(), scaled_pixmap.height())
         btn.setStyleSheet("border: none;")
+        btn.clicked.connect(function)
+
+    def open_trashmain(self):
+        trashmain_script_path = os.path.join(os.path.expanduser("~"), "Desktop", "living-main", "LTC_TrashMain.py")
+        subprocess.Popen([sys.executable, trashmain_script_path])
+        self.close()
+
+    def open_fridgemain(self):
+        fridgemain_script_path = os.path.join(os.path.expanduser("~"), "Desktop", "living-main", "Fridge.py")
+        subprocess.Popen([sys.executable, fridgemain_script_path])
+        self.close()
 
     def dummy_function(self):
         print("This button does nothing for now.")
-    
-    def create_main_button(self):
-        main_button = QPushButton("Main", self)
-        main_button.setGeometry(20, 20, 100, 50)  
-        main_button.clicked.connect(self.go_to_main)
-        
-    def go_to_main(self):
-        subprocess.Popen([sys.executable, "LTC_Main.py"])
-        self.close()
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    trashmainwindow = TrashMainWindow()
-    trashmainwindow.show()
-    sys.exit(app.exec_())
+    app_main = QApplication(sys.argv) 
+    mainwindow = MainWindow() 
+    mainwindow.show() 
+    sys.exit(app_main.exec_())
