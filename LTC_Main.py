@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):
         self.image_label_Logo.setPixmap(scaled_pixmap_Logo)
         self.image_label_Logo.setAlignment(Qt.AlignCenter)
         
-        self.create_image_button(os.path.join(main_folder, "img", "Main", "laundry.png"), 250, 300, "laundry_tip", 200, 150, self.dummy_function)
+        self.create_image_button(os.path.join(main_folder, "img", "Main", "laundry.png"), 250, 300, "laundry_tip", 200, 150, self.open_wassingmain)
         self.create_image_button(os.path.join(main_folder, "img", "Main", "trash.png"), 500, 280, "trash_tip", 200, 150, self.open_trashmain)
         self.create_image_button(os.path.join(main_folder, "img", "Main", "fridge.png"), 750, 290, "cooking_tip", 200, 150, self.open_fridgemain)
         self.create_image_button(os.path.join(main_folder, "img", "Main", "login.png"), 980, 720, "login", 150, 120, self.dummy_function)
@@ -63,6 +63,11 @@ class MainWindow(QMainWindow):
     def open_fridgemain(self):
         fridgemain_script_path = os.path.join(os.path.expanduser("~"), "Desktop", "living-main", "Fridge.py")
         subprocess.Popen([sys.executable, fridgemain_script_path])
+        self.close()
+
+    def open_wassingmain(self):
+        fridgemain_script_path = os.path.join(os.path.expanduser("~"), "Desktop", "living-main", "washing_material.py")
+        subprocess.Popen([sys.executable, wassingmain_script_path])
         self.close()
 
     def dummy_function(self):
