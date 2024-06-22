@@ -10,7 +10,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("나만의 냉장고")
-        self.setGeometry(0, 0, 1200, 820)
+        self.setGeometry(400, 100, 1200, 820)
 
         self.background_image_path = "background.png"
         self.background_img = self.load_image(self.background_image_path, (1200, 820))
@@ -59,6 +59,10 @@ class MainWindow(QMainWindow):
 
         self.set_image_layout_background("Fridge/list.png")  # 이미지 레이아웃의 배경 설정
 
+        # 이미지 버튼 클릭 시 check_ingredient.py 실행
+        for button in self.image_buttons:
+            button.clicked.connect(self.run_check_ingredient)
+
     def set_image_layout_background(self, image_path):
         try:
             image = QImage(image_path)
@@ -97,12 +101,10 @@ class MainWindow(QMainWindow):
         button.setIconSize(pixmap.size())
         button.setFixedSize(pixmap.size())
         button.setStyleSheet("border: none; background-color: transparent;")
-        button.clicked.connect(lambda: self.run_check_ingredient(image_path))
+        button.clicked.connect(lambda: self.run_check_ingredient(image_path))  # 클릭 시 이미지 경로를 전달
 
         self.image_buttons.append(button)
         self.image_paths.add(image_path)  # 추가된 이미지 경로를 기록
-
-        self.refresh_image_layout()
 
     def check_for_new_image(self):
         flag_path = "saved_data/new_image_flag.txt"

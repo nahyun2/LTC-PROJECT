@@ -8,8 +8,8 @@ from PyQt5.QtCore import QSize, Qt, QProcess, QDir
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("냉장고 안 재료 확인하기")
-        self.setGeometry(0, 0, 1200, 820)
+        self.setWindowTitle("냉장고 재료 추가하기")
+        self.setGeometry(400, 100, 1200, 820)
 
         # 배경 이미지 파일 경로
         self.background_image_path = "background.png"
@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
         # 저장 이미지 버튼 생성
         self.save_label = QLabel(self.central_widget)
         self.save_label.setGeometry(890, 735, 100, 50)
-        pixmap_save = QPixmap("Fridge/delete.png").scaled(100, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pixmap_save = QPixmap("Fridge/save.png").scaled(100, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.save_label.setPixmap(pixmap_save)
         self.save_label.setScaledContents(True)
         self.save_label.mousePressEvent = self.save_action
@@ -69,19 +69,19 @@ class MainWindow(QMainWindow):
         # 메모 입력 위젯 생성
         self.memo1_input = QTextEdit(self.central_widget)
         self.memo1_input.setGeometry(800, 100, 250, 50)
-        self.set_cursor_style(self.memo1_input)  # 처음 한 번만 설정
+        self.set_cursor_style(self.memo1_input)  
 
         self.memo2_input = QTextEdit(self.central_widget)
         self.memo2_input.setGeometry(800, 200, 250, 50)
-        self.set_cursor_style(self.memo2_input)  # 처음 한 번만 설정
+        self.set_cursor_style(self.memo2_input)  
 
         self.memo3_input = QTextEdit(self.central_widget)
         self.memo3_input.setGeometry(800, 310, 250, 50)
-        self.set_cursor_style(self.memo3_input)  # 처음 한 번만 설정
+        self.set_cursor_style(self.memo3_input)  
 
         self.memo4_input = QTextEdit(self.central_widget)
         self.memo4_input.setGeometry(630, 470, 420, 200)
-        self.set_cursor_style(self.memo4_input)  # 처음 한 번만 설정
+        self.set_cursor_style(self.memo4_input)  
 
     def set_cursor_style(self, text_edit):
         # 이미 설정된 폰트 크기가 있는지 확인 후 적용
@@ -153,7 +153,7 @@ class MainWindow(QMainWindow):
 
         return circular_pixmap
 
-    def save_action(self):
+    def save_action(self, event):
         # 저장 버튼 클릭 시 메모와 이미지 저장
         memo_text1 = self.memo1_input.toPlainText().strip()
         memo_text2 = self.memo2_input.toPlainText().strip()
@@ -165,14 +165,14 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "저장 실패", "내용을 입력해주세요")
             return
 
-        # 네 개의 메모 내용을 하나의 텍스트로 합치기
-        combined_text = f"메모 1:\n{memo_text1}\n\n메모 2:\n{memo_text2}\n\n메모 3:\n{memo_text3}\n\n메모 4:\n{memo_text4}"
-
-        # 텍스트 파일로 저장
-        file_name = f"{memo_text1}.txt"
-        file_path = os.path.join("saved_data", file_name)
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write(combined_text)
+        # 각 메모를 파일로 저장
+        memo_texts = [memo_text1, memo_text2, memo_text3, memo_text4]
+        for i, memo_text in enumerate(memo_texts):
+            if memo_text:  # 메모가 비어 있지 않은 경우에만 저장
+                file_name = f"{memo_text1}{i + 1}.txt"
+                file_path = os.path.join("saved_data", file_name)
+                with open(file_path, "w", encoding="utf-8") as f:
+                    f.write(memo_text)
 
         # 선택한 이미지 파일을 원형 이미지로 변환하여 저장
         if hasattr(self, 'selected_image_path') and os.path.isfile(self.selected_image_path):
@@ -183,13 +183,14 @@ class MainWindow(QMainWindow):
             image_save_path = os.path.join("saved_data", image_file_name)
             circular_pixmap.save(image_save_path, "PNG")  # 원형 이미지를 PNG 파일로 저장
 
-            QMessageBox.information(self, "저장 완료", f"\'{memo_text1}\' 저장되었습니다.")
+            QMessageBox.information(self, "저장 완료", "저장되었습니다.")
             self.close()
         else:
             QMessageBox.warning(self, "저장 실패", "사진을 추가하거나 내용을 입력해주세요.")
 
+
     def close_action(self):
-        # 닫기 버튼 클릭 시 수행할 동작을 여기에 구현
+            # 닫기 버튼 클릭 시 수행할 동작을 여기에 구현
         self.close()
 
 
